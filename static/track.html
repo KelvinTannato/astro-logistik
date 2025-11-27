@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lacak Kiriman - ASTRO LOGISTIK</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: linear-gradient(135deg, #f0f9ff 0%, #cbebff 100%); }
+        .track-wrapper { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .track-card { width: 100%; max-width: 500px; padding: 40px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .result-box { margin-top: 30px; text-align: left; background: #f8fafc; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .result-header { border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 15px; color: var(--primary-dark); font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        .result-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem; }
+        .label { color: var(--text-secondary); font-size: 0.85rem; }
+        .value { font-weight: 500; color: var(--text-main); }
+    </style>
+</head>
+<body>
+    <div class="track-wrapper">
+        <div class="card track-card">
+            <div style="margin-bottom: 30px;">
+                <h1><span class="logo-blue">ASTRO</span> LOGISTIK</h1>
+                <p style="color: var(--text-secondary);">Real-time Cargo Tracking</p>
+            </div>
+
+            <div class="input-wrapper">
+                <input type="text" id="track-input" placeholder="Masukkan Nomor SMU (cth: MES123)" style="text-align: center; font-size: 1.1rem; letter-spacing: 1px;">
+            </div>
+            <button id="track-btn" class="btn primary-btn full-width" style="margin-top: 10px; padding: 12px;">
+                <i class="fas fa-search"></i> Lacak Sekarang
+            </button>
+
+            <div id="result-area" style="display: none;"></div>
+
+            <div style="margin-top: 40px;">
+                <a href="index.html" class="btn secondary-btn small-btn"><i class="fas fa-lock"></i> Login Staff</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple Inline Script for Public Page
+        document.getElementById('track-btn').addEventListener('click', doTrack);
+        document.getElementById('track-input').addEventListener('keypress', e => { if(e.key==='Enter') doTrack() });
+
+        function doTrack() {
+            const input = document.getElementById('track-input').value.trim().toUpperCase();
+            const area = document.getElementById('result-area');
+            
+            if(!input) return alert("Masukkan nomor SMU!");
+            
+            const data = JSON.parse(localStorage.getItem('astro_smu_data') || '[]');
+            const item = data.find(i => i.smu === input);
+
+            area.style.display = 'block';
+            
+            if(item) {
+                const status = item.publishedStatus || item.status;
+                // Reuse logic visual from main script logic simplified
+                let statusColor = 'pending';
+                if(status.includes('Sudah diterima')) statusColor = 'done';
+                else if(status.includes('Sampai')) statusColor = 'info';
+                else if(status.includes('>')) statusColor = 'process';
+
+                area.innerHTML = `
+                    <div class="result-box">
+                        <div class="result-header">
+                            <span><i class="fas fa-box"></i> Detail Paket</span>
+                            <span class="status-badge ${statusColor}" style="background-color: var(--status-${statusColor})">${status}</span>
+                        </div>
+                        <div class="result-row"><span class="label">Nomor SMU</span> <span class="value">${item.smu}</span></div>
+                        <div class="result-row"><span class="label">Customer</span> <span class="value">${item.customer}</span></div>
+                        <div class="result-row"><span class="label">Rute</span> <span class="value">${item.asal} &rarr; ${item.tujuan}</span></div>
+                        <div class="result-row"><span class="label">Koli</span> <span class="value">${item.koli} Pcs</span></div>
+                        <hr style="margin: 10px 0; border:0; border-top:1px dashed #ccc;">
+                        <div class="result-row"><span class="label">Est. Bandara</span> <span class="value">${formatTime(item.publishedEtaBandara)}</span></div>
+                        <div class="result-row"><span class="label">Est. Door</span> <span class="value">${formatTime(item.publishedEtaDoor)}</span></div>
+                    </div>
+                `;
+            } else {
+                area.innerHTML = `
+                    <div class="result-box" style="text-align:center; color: #ef4444;">
+                        <i class="fas fa-exclamation-circle fa-2x" style="margin-bottom:10px;"></i><br>
+                        Data SMU <b>${input}</b> tidak ditemukan.
+                    </div>
+                `;
+            }
+        }
+        function formatTime(iso) {
+            if(!iso) return '-';
+            const d = new Date(iso);
+            return `${d.getHours()}.${d.getMinutes()} (${d.getDate()}/${d.getMonth()+1})`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ASTRO LOGISTIK</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <h1><span class="logo-blue">ASTRO</span> LOGISTIK</h1>
+            <p>Incoming Dashboard V5.0</p>
+        </div>
+        <nav>
+            <span id="user-display"><i class="fas fa-user-circle"></i> Loading...</span>
+            <button id="logout-btn" class="btn danger-outline-btn small-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section id="statistics-cards" class="card-grid">
+            <div class="stat-card blue">
+                <div class="stat-icon"><i class="fas fa-plane-arrival"></i></div>
+                <div class="stat-info">
+                    <h3>Total SMU Hari Ini</h3>
+                    <p id="stat-total-today">0</p>
+                </div>
+            </div>
+            <div class="stat-card yellow">
+                <div class="stat-icon"><i class="fas fa-truck-fast"></i></div>
+                <div class="stat-info">
+                    <h3>On Process</h3>
+                    <p id="stat-on-process">0</p>
+                </div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-info">
+                    <h3>Selesai (Delivered)</h3>
+                    <p id="stat-arrived">0</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="card form-section">
+            <div class="card-header">
+                <h2><i class="fas fa-file-import"></i> Input Data SMU</h2>
+            </div>
+            <form id="smu-input-form">
+                <div class="form-grid">
+                    <div class="input-wrapper">
+                        <label>Nama Customer</label>
+                        <input type="text" id="smu-customer" placeholder="Nama / Kode Customer" required>
+                    </div>
+                    <div class="input-wrapper">
+                        <label>Nomor SMU</label>
+                        <input type="text" id="smu-nomor" placeholder="888-12345678" required>
+                    </div>
+                    <div class="input-wrapper">
+                        <label>Kota Asal (Origin)</label>
+                        <input type="text" id="smu-asal" placeholder="PLW" required>
+                    </div>
+                    <div class="input-wrapper">
+                        <label>Kota Transit</label>
+                        <input type="text" id="smu-transit" placeholder="CGK" required>
+                    </div>
+                    <div class="input-wrapper">
+                        <label>Kota Tujuan (Dest)</label>
+                        <input type="text" id="smu-tujuan" value="KNO" readonly required class="readonly-input">
+                    </div>
+                </div>
+                <div class="input-wrapper full-width">
+                    <label>Keterangan Tambahan</label>
+                    <textarea id="smu-notes" placeholder="Isi keterangan barang atau instruksi khusus..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn primary-btn"><i class="fas fa-save"></i> Simpan Data SMU</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="card table-section">
+            
+            <div class="update-info-bar">
+                <div><i class="fas fa-bullhorn"></i> Publikasi Status Terakhir: <strong id="last-update-time">Belum Ada Update</strong></div>
+            </div>
+
+            <div id="admin-global-controls" class="admin-only control-panel">
+                <div class="panel-header"><span><i class="fas fa-tools"></i> Panel Admin</span></div>
+                <div class="panel-body">
+                    <div class="control-group">
+                        <label>Publikasi Update Massal:</label>
+                        <div class="flex-row">
+                            <select id="customer-select">
+                                <option value="">-- Pilih Customer --</option>
+                            </select>
+                            <button id="trigger-status-update" class="btn primary-btn"><i class="fas fa-satellite-dish"></i> Publish</button>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label>Manajemen Data:</label>
+                        <div class="flex-row">
+                            <button id="export-csv-btn" class="btn secondary-btn"><i class="fas fa-file-csv"></i> CSV</button>
+                            <button id="print-manifest-btn" class="btn secondary-btn"><i class="fas fa-print"></i> Print</button>
+                            <button id="backup-btn" class="btn info-btn"><i class="fas fa-download"></i> Backup JSON</button>
+                            <label for="restore-file" class="btn warning-btn custom-file-upload">
+                                <i class="fas fa-upload"></i> Restore
+                            </label>
+                            <input id="restore-file" type="file" accept=".json" style="display:none;"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-header-controls">
+                <h2><i class="fas fa-list-ul"></i> Monitoring SMU</h2>
+                <div class="filter-controls">
+                    <input type="text" id="filter-smu" placeholder="Cari No. SMU...">
+                    <input type="text" id="filter-customer" placeholder="Cari Customer...">
+                    <select id="filter-status">
+                        <option value="">Semua Status</option>
+                    </select>
+                    <button id="clear-filters-btn" class="btn text-btn"><i class="fas fa-eraser"></i> Reset</button>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table id="smu-table">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Customer</th>
+                            <th>Nomor SMU</th>
+                            <th>Rute</th>
+                            <th>Koli</th>
+                            <th>Status Final</th>
+                            <th>Est. Bandara</th>
+                            <th>Est. Door</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+            <div id="no-data-message" class="empty-state" style="display: none;">
+                <img src="https://cdn-icons-png.flaticon.com/512/4076/4076432.png" alt="No Data" width="100">
+                <p>Tidak ada data ditemukan.</p>
+            </div>
+        </section>
+    </main>
+
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Edit Data SMU</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modal-edit-id">
+                
+                <div class="form-group-title">Data Pengiriman</div>
+                <div class="form-grid">
+                    <div class="input-wrapper"><label>Nomor SMU</label><input type="text" id="modal-smu" required></div>
+                    <div class="input-wrapper"><label>Customer</label><input type="text" id="modal-customer" required></div>
+                    <div class="input-wrapper"><label>Asal</label><input type="text" id="modal-asal" required></div>
+                    <div class="input-wrapper"><label>Transit</label><input type="text" id="modal-transit"></div>
+                    <div class="input-wrapper"><label>Tujuan</label><input type="text" id="modal-tujuan" required></div>
+                    <div class="input-wrapper"><label>Koli</label><input type="number" id="modal-koli" required></div>
+                </div>
+                <div class="input-wrapper full-width"><label>Notes</label><textarea id="modal-notes"></textarea></div>
+
+                <div id="modal-admin-section" class="admin-only-block">
+                    <div class="form-group-title admin-text"><i class="fas fa-user-shield"></i> Update Status (Admin)</div>
+                    <div class="form-grid">
+                        <div class="input-wrapper">
+                            <label>Status Tracking</label>
+                            <select id="modal-status-select"></select>
+                        </div>
+                        <div class="input-wrapper">
+                            <label>ETA Bandara (HH.MM/DD)</label>
+                            <input type="text" id="modal-eta-bandara" placeholder="16.00/12">
+                        </div>
+                        <div class="input-wrapper">
+                            <label>ETA Door (HH.MM/DD)</label>
+                            <input type="text" id="modal-eta-door" placeholder="18.30/12">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn secondary-btn close-modal-btn">Batal</button>
+                <button id="save-modal-btn" class="btn primary-btn">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+    <div id="loading-panel" style="
+        position: fixed;
+        top: 90px;
+        right: -400px; /* Sembunyi di kanan layar */
+        width: 350px;
+        background: white;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        border-left: 5px solid var(--primary-color);
+        border-radius: 8px;
+        padding: 20px;
+        z-index: 9999;
+        transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    ">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <i class="fas fa-satellite-dish fa-spin" style="font-size: 2rem; color: var(--primary-color);"></i>
+            <div>
+                <h4 id="loading-text" style="margin: 0; font-size: 1rem; color: #1f2937;">Memulai Tracking...</h4>
+                <small id="loading-subtext" style="color: #6b7280;">Menghubungkan ke Robot...</small>
+            </div>
+        </div>
+
+        <div style="background: #f3f4f6; border-radius: 5px; height: 6px; width: 100%; overflow: hidden; margin-top: 5px;">
+            <div id="progress-bar-fill" style="background: var(--primary-color); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+        </div>
+    
+        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #9ca3af; margin-top: -5px;">
+            <span>Progress</span>
+            <span id="progress-percentage">0%</span>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ASTRO LOGISTIK</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="auth-wrapper">
+        <div class="auth-container">
+            <div class="card auth-card">
+                <div class="auth-header">
+                    <h1><span class="logo-blue">ASTRO</span> LOGISTIK</h1>
+                    <p>Sistem Manajemen Incoming V5.0</p>
+                </div>
+
+                <form id="login-form">
+                    <h2><i class="fas fa-sign-in-alt"></i> Masuk</h2>
+                    <div class="input-group">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="login-username" placeholder="Username" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="login-password" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn primary-btn full-width">Login Dashboard</button>
+                </form>
+
+                <form id="register-form" style="display:none;">
+                    <h2><i class="fas fa-user-plus"></i> Daftar Akun</h2>
+                    <div class="input-group">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="reg-username" placeholder="Username Baru" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="reg-password" placeholder="Password Baru" required>
+                    </div>
+                    <button type="submit" class="btn primary-btn full-width">Daftar Sekarang</button>
+                </form>
+
+                <div class="auth-footer">
+                    <p class="toggle-link">
+                        <a href="#" id="toggle-auth">Belum punya akun? Daftar di sini.</a>
+                    </p>
+                    <div class="divider"><span>ATAU</span></div>
+                    <a href="track.html" class="btn secondary-btn full-width"><i class="fas fa-search-location"></i> Lacak Paket (Publik)</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="script.js"></script>
+</body>
+</html>
