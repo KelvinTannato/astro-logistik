@@ -1,0 +1,11 @@
+# Abaikan folder virtual environment (Berat & tidak perlu)
+venv/
+env/
+.env
+
+# Abaikan file cache python (Sampah)
+__pycache__/
+*.pyc
+
+# Abaikan database lokal (Opsional, biar data tes di laptop gak ketimpa data server)
+logistik.db
